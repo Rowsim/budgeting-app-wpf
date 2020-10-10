@@ -1,0 +1,134 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FYP"
+             xmlns:FYP.Model="clr-namespace:FYP.Model"
+             xmlns:StatisticsControls="clr-namespace:FYP.StatisticsControls" x:Class="FYP.StatisticsView"
+             xmlns:FYP.ViewModel="clr-namespace:FYP.ViewModel"
+             xmlns:StatisticsControlsView="clr-namespace:FYP.StatisticsControls.View"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="384" d:DesignWidth="820">
+
+    <UserControl.DataContext>
+        <FYP.ViewModel:StatisticsViewModel />
+    </UserControl.DataContext>
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid  Visibility="{Binding Path=StatisticsVisibility, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <DockPanel VerticalAlignment="Top" Margin="0,5,0,0">
+                <ComboBox IsEditable="False" FontSize="10"
+                  Style="{StaticResource MaterialDesignComboBox}" Margin="10 0 0 0" VerticalAlignment="Center" HorizontalContentAlignment="Center"
+                  ItemsSource="{Binding ObcStatisticsAccounts, UpdateSourceTrigger=PropertyChanged}" Width="220"
+                  SelectedItem="{Binding SelectedStatisticsAccount}"
+                  SelectedIndex="0">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type FYP.Model:AccountModel}">
+                            <DockPanel HorizontalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" FontSize="12" TextAlignment="Center"/>
+                            </DockPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <ComboBox IsEditable="False" FontSize="12"
+                          Style="{StaticResource MaterialDesignComboBox}" Margin="0 0 5 0" VerticalAlignment="Center" HorizontalAlignment="Right"
+                          HorizontalContentAlignment="Center" 
+                          ItemsSource="{Binding Path=GraphList}" Width="220" SelectedIndex="0"
+                          SelectedItem="{Binding SelectedGraph, 
+                          UpdateSourceTrigger=PropertyChanged, Mode=OneWayToSource}">
+            </ComboBox>
+        </DockPanel>
+
+        <StackPanel Name="LeftPageContent" Width="400" HorizontalAlignment="Left" Margin="0,35,0,0">
+            <StackPanel Name="QuickStatsContent" Width="360" VerticalAlignment="Top" Margin="0,17,0,0" Visibility="Visible">
+                <Label Content="YOUR ACCOUNT AT A GLANCE" FontSize="26" FontWeight="Light"/>
+                <StackPanel Margin="10,5,10,10">
+                    <StackPanel Name="AccountExpenditureAndIncome" HorizontalAlignment="Center">
+                            <DockPanel>
+                                <Label Content="Expenditure:" FontSize="16" FontWeight="Light"/>
+                                <TextBlock Text="{Binding AccountExpenditureLabel, StringFormat={}£ {0:N0}}"
+                                  Margin="0,5,0,0" Foreground="Red" FontSize="17"/>
+                            </DockPanel>
+                            <DockPanel>
+                                <Label Content="Income:" FontSize="16" FontWeight="Light"/>
+                                <TextBlock Text="{Binding AccountIncomeLabel, StringFormat={}£ {0:N0}}" 
+                                  Margin="0,5,0,0" Foreground="Green" FontSize="17"/>
+                            </DockPanel>
+                        </StackPanel>
+
+                        <DockPanel Name="AccountCommonTransactionType" Margin="0,20,0,15">
+                            <StackPanel HorizontalAlignment="Center">
+                                <Label Content="Your most frequent transaction type is:" FontSize="17" FontWeight="Light"/>
+                                <Label Content="{Binding CommonTransactionTypeLabel}" FontSize="18" Foreground="OrangeRed" HorizontalContentAlignment="Center"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <DockPanel Name="AccountCommonTransactionDay" HorizontalAlignment="Center">
+                            <StackPanel>
+                                <Label Content="You tend to make the most transactions on:" FontSize="17" FontWeight="Light"/>
+                                <Label Content="{Binding CommonTransactionDayLabel}" FontSize="18" Foreground="OrangeRed" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </DockPanel>
+                    
+                    </StackPanel>
+                   
+                </StackPanel>
+            <StackPanel Name="NoTransactions"></StackPanel>
+        </StackPanel>
+
+        <Grid IsEnabled="{Binding PieChartVisibility}" Visibility="{Binding Path=PieChartVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290">
+            <StatisticsControls:TransactionsTypePieChart
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290" Margin="0,0,0,-45"/>
+        </Grid>
+
+        <Grid IsEnabled="{Binding LineChartTransactionsVisibility}" Visibility="{Binding LineChartTransactionsVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290">
+            <StatisticsControlsView:RecentTransactionsLineChart
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290" Margin="0,0,0,-45"/>
+        </Grid>
+
+            <Grid IsEnabled="{Binding BarChartAccountsVisibility}" Visibility="{Binding Path=BarChartAccountsVisibility, Converter={StaticResource BooleanToVisibilityConverter}}"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290">
+                <StatisticsControlsView:AccountsBarChart
+          HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="400" Height="290" Margin="0,0,0,-45"/>
+            </Grid>
+
+            <StackPanel Margin="75 0 0 -55" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+                <Label Content="SELECT DATE RANGE"  FontSize="18" FontWeight="Light" HorizontalAlignment="Center"/>
+                <DockPanel Margin="0 0 0 0" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                    <DatePicker HorizontalAlignment="Stretch" Margin="0 0 10 0" FontSize="15"
+                                Style="{StaticResource MaterialDesignFloatingHintDatePicker}" SelectedDate="{Binding StartDate}"/>
+                    <Label Content="-" FontSize="15"/>
+
+                    <DatePicker HorizontalAlignment="Stretch" Margin="10 0 0 0" FontSize="15"
+                                Style="{StaticResource MaterialDesignFloatingHintDatePicker}" SelectedDate="{Binding EndDate}"/>
+                </DockPanel>
+            </StackPanel>
+
+            <DockPanel Margin="0 0 0 -80" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <ComboBox IsEditable="False" FontSize="13"
+                      Style="{StaticResource MaterialDesignComboBox}" Margin="0 0 5 10" VerticalAlignment="Center" 
+                      HorizontalContentAlignment="Left" Width="120"
+                      ItemsSource="{Binding Path=TransactionTypeFilterList, Mode=OneWay}" 
+                      SelectedItem="{Binding SelectedTransactionTypeFilter, UpdateSourceTrigger=PropertyChanged,Mode=OneWayToSource}"
+                      SelectedIndex="0"
+                      IsEnabled="{Binding FilterControlsVisibility}">
+            </ComboBox>
+        </DockPanel>
+        </Grid>
+
+        <Grid  Visibility="{Binding Path=InvalidAccountVisibility, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Label Content="You must have an account with at least one transaction to view statistics." FontWeight="Light" FontSize="22"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+    </Grid>
+</UserControl>
+
